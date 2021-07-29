@@ -1,0 +1,3456 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Untitled2.ipynb",
+      "provenance": [],
+      "authorship_tag": "ABX9TyM2zY1g1i+y3PinWjYfDGcB",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/pawtar90/data-science-bootcamp/blob/main/01_wprowadzenie/case1\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "LO2J7rRa2MJh"
+      },
+      "source": [
+        "import numpy as np\n",
+        "import pandas as pd"
+      ],
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "AkL8hC842Qfj",
+        "outputId": "bb2db25b-ecec-467a-cc17-58562f3f0f4d"
+      },
+      "source": [
+        "def fetch_financial_data(company='AMZN'):\n",
+        "  import pandas_datareader.data as web\n",
+        "  return web.DataReader(name=company, data_source='stooq')\n",
+        "\n",
+        "df = fetch_financial_data()\n",
+        "df.info()"
+      ],
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "<class 'pandas.core.frame.DataFrame'>\n",
+            "DatetimeIndex: 1257 entries, 2021-07-28 to 2016-08-01\n",
+            "Data columns (total 5 columns):\n",
+            " #   Column  Non-Null Count  Dtype  \n",
+            "---  ------  --------------  -----  \n",
+            " 0   Open    1257 non-null   float64\n",
+            " 1   High    1257 non-null   float64\n",
+            " 2   Low     1257 non-null   float64\n",
+            " 3   Close   1257 non-null   float64\n",
+            " 4   Volume  1257 non-null   int64  \n",
+            "dtypes: float64(4), int64(1)\n",
+            "memory usage: 58.9 KB\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 450
+        },
+        "id": "omEaO08o278-",
+        "outputId": "171d4cec-8bca-4386-a3a9-47b2966afdd7"
+      },
+      "source": [
+        "df\n"
+      ],
+      "execution_count": 6,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Open</th>\n",
+              "      <th>High</th>\n",
+              "      <th>Low</th>\n",
+              "      <th>Close</th>\n",
+              "      <th>Volume</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2021-07-28</th>\n",
+              "      <td>3633.78</td>\n",
+              "      <td>3658.4204</td>\n",
+              "      <td>3601.00</td>\n",
+              "      <td>3630.32</td>\n",
+              "      <td>2999378</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-27</th>\n",
+              "      <td>3698.50</td>\n",
+              "      <td>3698.5000</td>\n",
+              "      <td>3586.15</td>\n",
+              "      <td>3626.39</td>\n",
+              "      <td>4131890</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-26</th>\n",
+              "      <td>3673.17</td>\n",
+              "      <td>3712.0800</td>\n",
+              "      <td>3647.25</td>\n",
+              "      <td>3699.82</td>\n",
+              "      <td>2900068</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-23</th>\n",
+              "      <td>3640.00</td>\n",
+              "      <td>3666.1100</td>\n",
+              "      <td>3622.04</td>\n",
+              "      <td>3656.64</td>\n",
+              "      <td>2436292</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-22</th>\n",
+              "      <td>3587.23</td>\n",
+              "      <td>3640.0200</td>\n",
+              "      <td>3582.27</td>\n",
+              "      <td>3638.03</td>\n",
+              "      <td>3265352</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>...</th>\n",
+              "      <td>...</td>\n",
+              "      <td>...</td>\n",
+              "      <td>...</td>\n",
+              "      <td>...</td>\n",
+              "      <td>...</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2016-08-05</th>\n",
+              "      <td>764.81</td>\n",
+              "      <td>768.4700</td>\n",
+              "      <td>763.09</td>\n",
+              "      <td>765.98</td>\n",
+              "      <td>2516246</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2016-08-04</th>\n",
+              "      <td>753.70</td>\n",
+              "      <td>765.0000</td>\n",
+              "      <td>750.35</td>\n",
+              "      <td>760.77</td>\n",
+              "      <td>2557512</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2016-08-03</th>\n",
+              "      <td>757.06</td>\n",
+              "      <td>758.8900</td>\n",
+              "      <td>752.25</td>\n",
+              "      <td>754.55</td>\n",
+              "      <td>3083438</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2016-08-02</th>\n",
+              "      <td>763.81</td>\n",
+              "      <td>765.0100</td>\n",
+              "      <td>757.02</td>\n",
+              "      <td>760.58</td>\n",
+              "      <td>3167836</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2016-08-01</th>\n",
+              "      <td>759.87</td>\n",
+              "      <td>770.5000</td>\n",
+              "      <td>757.06</td>\n",
+              "      <td>767.74</td>\n",
+              "      <td>3053862</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "<p>1257 rows × 5 columns</p>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "               Open       High      Low    Close   Volume\n",
+              "Date                                                     \n",
+              "2021-07-28  3633.78  3658.4204  3601.00  3630.32  2999378\n",
+              "2021-07-27  3698.50  3698.5000  3586.15  3626.39  4131890\n",
+              "2021-07-26  3673.17  3712.0800  3647.25  3699.82  2900068\n",
+              "2021-07-23  3640.00  3666.1100  3622.04  3656.64  2436292\n",
+              "2021-07-22  3587.23  3640.0200  3582.27  3638.03  3265352\n",
+              "...             ...        ...      ...      ...      ...\n",
+              "2016-08-05   764.81   768.4700   763.09   765.98  2516246\n",
+              "2016-08-04   753.70   765.0000   750.35   760.77  2557512\n",
+              "2016-08-03   757.06   758.8900   752.25   754.55  3083438\n",
+              "2016-08-02   763.81   765.0100   757.02   760.58  3167836\n",
+              "2016-08-01   759.87   770.5000   757.06   767.74  3053862\n",
+              "\n",
+              "[1257 rows x 5 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 6
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 235
+        },
+        "id": "ZuujVTM93Oif",
+        "outputId": "ea3ae92a-3642-4eb8-c806-0560898d8cb3"
+      },
+      "source": [
+        "df.head()"
+      ],
+      "execution_count": 7,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Open</th>\n",
+              "      <th>High</th>\n",
+              "      <th>Low</th>\n",
+              "      <th>Close</th>\n",
+              "      <th>Volume</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2021-07-28</th>\n",
+              "      <td>3633.78</td>\n",
+              "      <td>3658.4204</td>\n",
+              "      <td>3601.00</td>\n",
+              "      <td>3630.32</td>\n",
+              "      <td>2999378</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-27</th>\n",
+              "      <td>3698.50</td>\n",
+              "      <td>3698.5000</td>\n",
+              "      <td>3586.15</td>\n",
+              "      <td>3626.39</td>\n",
+              "      <td>4131890</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-26</th>\n",
+              "      <td>3673.17</td>\n",
+              "      <td>3712.0800</td>\n",
+              "      <td>3647.25</td>\n",
+              "      <td>3699.82</td>\n",
+              "      <td>2900068</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-23</th>\n",
+              "      <td>3640.00</td>\n",
+              "      <td>3666.1100</td>\n",
+              "      <td>3622.04</td>\n",
+              "      <td>3656.64</td>\n",
+              "      <td>2436292</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-22</th>\n",
+              "      <td>3587.23</td>\n",
+              "      <td>3640.0200</td>\n",
+              "      <td>3582.27</td>\n",
+              "      <td>3638.03</td>\n",
+              "      <td>3265352</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "               Open       High      Low    Close   Volume\n",
+              "Date                                                     \n",
+              "2021-07-28  3633.78  3658.4204  3601.00  3630.32  2999378\n",
+              "2021-07-27  3698.50  3698.5000  3586.15  3626.39  4131890\n",
+              "2021-07-26  3673.17  3712.0800  3647.25  3699.82  2900068\n",
+              "2021-07-23  3640.00  3666.1100  3622.04  3656.64  2436292\n",
+              "2021-07-22  3587.23  3640.0200  3582.27  3638.03  3265352"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 7
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 235
+        },
+        "id": "jz51kd9n4u6Y",
+        "outputId": "5e0521de-b8a6-4e6b-86a2-5bbbf10d58df"
+      },
+      "source": [
+        "df.columns = [col.lower() for col in df.columns]\n",
+        "df.head()"
+      ],
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>open</th>\n",
+              "      <th>high</th>\n",
+              "      <th>low</th>\n",
+              "      <th>close</th>\n",
+              "      <th>volume</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2021-07-28</th>\n",
+              "      <td>3633.78</td>\n",
+              "      <td>3658.4204</td>\n",
+              "      <td>3601.00</td>\n",
+              "      <td>3630.32</td>\n",
+              "      <td>2999378</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-27</th>\n",
+              "      <td>3698.50</td>\n",
+              "      <td>3698.5000</td>\n",
+              "      <td>3586.15</td>\n",
+              "      <td>3626.39</td>\n",
+              "      <td>4131890</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-26</th>\n",
+              "      <td>3673.17</td>\n",
+              "      <td>3712.0800</td>\n",
+              "      <td>3647.25</td>\n",
+              "      <td>3699.82</td>\n",
+              "      <td>2900068</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-23</th>\n",
+              "      <td>3640.00</td>\n",
+              "      <td>3666.1100</td>\n",
+              "      <td>3622.04</td>\n",
+              "      <td>3656.64</td>\n",
+              "      <td>2436292</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-22</th>\n",
+              "      <td>3587.23</td>\n",
+              "      <td>3640.0200</td>\n",
+              "      <td>3582.27</td>\n",
+              "      <td>3638.03</td>\n",
+              "      <td>3265352</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "               open       high      low    close   volume\n",
+              "Date                                                     \n",
+              "2021-07-28  3633.78  3658.4204  3601.00  3630.32  2999378\n",
+              "2021-07-27  3698.50  3698.5000  3586.15  3626.39  4131890\n",
+              "2021-07-26  3673.17  3712.0800  3647.25  3699.82  2900068\n",
+              "2021-07-23  3640.00  3666.1100  3622.04  3656.64  2436292\n",
+              "2021-07-22  3587.23  3640.0200  3582.27  3638.03  3265352"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 9
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 297
+        },
+        "id": "rkxZ4OnE5BL_",
+        "outputId": "b2047d3a-5ea7-4b65-fd57-627dbdff5525"
+      },
+      "source": [
+        "df.describe()"
+      ],
+      "execution_count": 10,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>open</th>\n",
+              "      <th>high</th>\n",
+              "      <th>low</th>\n",
+              "      <th>close</th>\n",
+              "      <th>volume</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>count</th>\n",
+              "      <td>1257.000000</td>\n",
+              "      <td>1257.000000</td>\n",
+              "      <td>1257.000000</td>\n",
+              "      <td>1257.000000</td>\n",
+              "      <td>1.257000e+03</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>mean</th>\n",
+              "      <td>1861.877312</td>\n",
+              "      <td>1881.034840</td>\n",
+              "      <td>1840.205255</td>\n",
+              "      <td>1861.221309</td>\n",
+              "      <td>4.269807e+06</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>std</th>\n",
+              "      <td>847.025993</td>\n",
+              "      <td>857.572206</td>\n",
+              "      <td>835.158111</td>\n",
+              "      <td>846.079757</td>\n",
+              "      <td>2.093891e+06</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>min</th>\n",
+              "      <td>730.000000</td>\n",
+              "      <td>743.260000</td>\n",
+              "      <td>710.100000</td>\n",
+              "      <td>719.070000</td>\n",
+              "      <td>8.813370e+05</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>25%</th>\n",
+              "      <td>1069.550000</td>\n",
+              "      <td>1101.940000</td>\n",
+              "      <td>1050.550000</td>\n",
+              "      <td>1094.220000</td>\n",
+              "      <td>2.889515e+06</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>50%</th>\n",
+              "      <td>1760.050000</td>\n",
+              "      <td>1777.000000</td>\n",
+              "      <td>1742.530000</td>\n",
+              "      <td>1761.830000</td>\n",
+              "      <td>3.685290e+06</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>75%</th>\n",
+              "      <td>2369.000000</td>\n",
+              "      <td>2394.000000</td>\n",
+              "      <td>2335.000000</td>\n",
+              "      <td>2367.920000</td>\n",
+              "      <td>5.114403e+06</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>max</th>\n",
+              "      <td>3744.000000</td>\n",
+              "      <td>3773.078200</td>\n",
+              "      <td>3696.792900</td>\n",
+              "      <td>3731.410000</td>\n",
+              "      <td>1.655260e+07</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "              open         high          low        close        volume\n",
+              "count  1257.000000  1257.000000  1257.000000  1257.000000  1.257000e+03\n",
+              "mean   1861.877312  1881.034840  1840.205255  1861.221309  4.269807e+06\n",
+              "std     847.025993   857.572206   835.158111   846.079757  2.093891e+06\n",
+              "min     730.000000   743.260000   710.100000   719.070000  8.813370e+05\n",
+              "25%    1069.550000  1101.940000  1050.550000  1094.220000  2.889515e+06\n",
+              "50%    1760.050000  1777.000000  1742.530000  1761.830000  3.685290e+06\n",
+              "75%    2369.000000  2394.000000  2335.000000  2367.920000  5.114403e+06\n",
+              "max    3744.000000  3773.078200  3696.792900  3731.410000  1.655260e+07"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 10
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 204
+        },
+        "id": "n1HLTP0g5aDH",
+        "outputId": "27db360a-d118-467f-87ab-3d0293a563a7"
+      },
+      "source": [
+        "df.describe().T\n"
+      ],
+      "execution_count": 11,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>count</th>\n",
+              "      <th>mean</th>\n",
+              "      <th>std</th>\n",
+              "      <th>min</th>\n",
+              "      <th>25%</th>\n",
+              "      <th>50%</th>\n",
+              "      <th>75%</th>\n",
+              "      <th>max</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>open</th>\n",
+              "      <td>1257.0</td>\n",
+              "      <td>1.861877e+03</td>\n",
+              "      <td>8.470260e+02</td>\n",
+              "      <td>730.00</td>\n",
+              "      <td>1069.55</td>\n",
+              "      <td>1760.05</td>\n",
+              "      <td>2369.00</td>\n",
+              "      <td>3.744000e+03</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>high</th>\n",
+              "      <td>1257.0</td>\n",
+              "      <td>1.881035e+03</td>\n",
+              "      <td>8.575722e+02</td>\n",
+              "      <td>743.26</td>\n",
+              "      <td>1101.94</td>\n",
+              "      <td>1777.00</td>\n",
+              "      <td>2394.00</td>\n",
+              "      <td>3.773078e+03</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>low</th>\n",
+              "      <td>1257.0</td>\n",
+              "      <td>1.840205e+03</td>\n",
+              "      <td>8.351581e+02</td>\n",
+              "      <td>710.10</td>\n",
+              "      <td>1050.55</td>\n",
+              "      <td>1742.53</td>\n",
+              "      <td>2335.00</td>\n",
+              "      <td>3.696793e+03</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>close</th>\n",
+              "      <td>1257.0</td>\n",
+              "      <td>1.861221e+03</td>\n",
+              "      <td>8.460798e+02</td>\n",
+              "      <td>719.07</td>\n",
+              "      <td>1094.22</td>\n",
+              "      <td>1761.83</td>\n",
+              "      <td>2367.92</td>\n",
+              "      <td>3.731410e+03</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>volume</th>\n",
+              "      <td>1257.0</td>\n",
+              "      <td>4.269807e+06</td>\n",
+              "      <td>2.093891e+06</td>\n",
+              "      <td>881337.00</td>\n",
+              "      <td>2889515.00</td>\n",
+              "      <td>3685290.00</td>\n",
+              "      <td>5114403.00</td>\n",
+              "      <td>1.655260e+07</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "         count          mean  ...         75%           max\n",
+              "open    1257.0  1.861877e+03  ...     2369.00  3.744000e+03\n",
+              "high    1257.0  1.881035e+03  ...     2394.00  3.773078e+03\n",
+              "low     1257.0  1.840205e+03  ...     2335.00  3.696793e+03\n",
+              "close   1257.0  1.861221e+03  ...     2367.92  3.731410e+03\n",
+              "volume  1257.0  4.269807e+06  ...  5114403.00  1.655260e+07\n",
+              "\n",
+              "[5 rows x 8 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 11
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 390
+        },
+        "id": "K2qgqbL-5nXf",
+        "outputId": "19c253f1-6824-4666-d777-b16a4c6ce2eb"
+      },
+      "source": [
+        "df = df.head(10)\n",
+        "df"
+      ],
+      "execution_count": 12,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>open</th>\n",
+              "      <th>high</th>\n",
+              "      <th>low</th>\n",
+              "      <th>close</th>\n",
+              "      <th>volume</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2021-07-28</th>\n",
+              "      <td>3633.780</td>\n",
+              "      <td>3658.4204</td>\n",
+              "      <td>3601.0000</td>\n",
+              "      <td>3630.32</td>\n",
+              "      <td>2999378</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-27</th>\n",
+              "      <td>3698.500</td>\n",
+              "      <td>3698.5000</td>\n",
+              "      <td>3586.1500</td>\n",
+              "      <td>3626.39</td>\n",
+              "      <td>4131890</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-26</th>\n",
+              "      <td>3673.170</td>\n",
+              "      <td>3712.0800</td>\n",
+              "      <td>3647.2500</td>\n",
+              "      <td>3699.82</td>\n",
+              "      <td>2900068</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-23</th>\n",
+              "      <td>3640.000</td>\n",
+              "      <td>3666.1100</td>\n",
+              "      <td>3622.0400</td>\n",
+              "      <td>3656.64</td>\n",
+              "      <td>2436292</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-22</th>\n",
+              "      <td>3587.230</td>\n",
+              "      <td>3640.0200</td>\n",
+              "      <td>3582.2700</td>\n",
+              "      <td>3638.03</td>\n",
+              "      <td>3265352</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-21</th>\n",
+              "      <td>3576.375</td>\n",
+              "      <td>3586.4500</td>\n",
+              "      <td>3543.6415</td>\n",
+              "      <td>3585.20</td>\n",
+              "      <td>2318989</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-20</th>\n",
+              "      <td>3567.320</td>\n",
+              "      <td>3592.0000</td>\n",
+              "      <td>3518.0000</td>\n",
+              "      <td>3573.19</td>\n",
+              "      <td>3255680</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-19</th>\n",
+              "      <td>3532.580</td>\n",
+              "      <td>3550.2100</td>\n",
+              "      <td>3499.1600</td>\n",
+              "      <td>3549.59</td>\n",
+              "      <td>3784595</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-16</th>\n",
+              "      <td>3633.310</td>\n",
+              "      <td>3646.0599</td>\n",
+              "      <td>3570.4550</td>\n",
+              "      <td>3573.63</td>\n",
+              "      <td>4043706</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-15</th>\n",
+              "      <td>3694.200</td>\n",
+              "      <td>3695.4000</td>\n",
+              "      <td>3620.9200</td>\n",
+              "      <td>3631.20</td>\n",
+              "      <td>3185292</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "                open       high        low    close   volume\n",
+              "Date                                                        \n",
+              "2021-07-28  3633.780  3658.4204  3601.0000  3630.32  2999378\n",
+              "2021-07-27  3698.500  3698.5000  3586.1500  3626.39  4131890\n",
+              "2021-07-26  3673.170  3712.0800  3647.2500  3699.82  2900068\n",
+              "2021-07-23  3640.000  3666.1100  3622.0400  3656.64  2436292\n",
+              "2021-07-22  3587.230  3640.0200  3582.2700  3638.03  3265352\n",
+              "2021-07-21  3576.375  3586.4500  3543.6415  3585.20  2318989\n",
+              "2021-07-20  3567.320  3592.0000  3518.0000  3573.19  3255680\n",
+              "2021-07-19  3532.580  3550.2100  3499.1600  3549.59  3784595\n",
+              "2021-07-16  3633.310  3646.0599  3570.4550  3573.63  4043706\n",
+              "2021-07-15  3694.200  3695.4000  3620.9200  3631.20  3185292"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 12
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "gzlgDLiq51UY",
+        "outputId": "c23e9673-00b8-46ce-e6a1-5b65663c5ca0"
+      },
+      "source": [
+        "df['open']"
+      ],
+      "execution_count": 13,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "Date\n",
+              "2021-07-28    3633.780\n",
+              "2021-07-27    3698.500\n",
+              "2021-07-26    3673.170\n",
+              "2021-07-23    3640.000\n",
+              "2021-07-22    3587.230\n",
+              "2021-07-21    3576.375\n",
+              "2021-07-20    3567.320\n",
+              "2021-07-19    3532.580\n",
+              "2021-07-16    3633.310\n",
+              "2021-07-15    3694.200\n",
+              "Name: open, dtype: float64"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 13
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ZLpFHUNz556Y",
+        "outputId": "38bccc39-9f91-437e-b4be-a9611b3db0ed"
+      },
+      "source": [
+        "df.open"
+      ],
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "Date\n",
+              "2021-07-28    3633.780\n",
+              "2021-07-27    3698.500\n",
+              "2021-07-26    3673.170\n",
+              "2021-07-23    3640.000\n",
+              "2021-07-22    3587.230\n",
+              "2021-07-21    3576.375\n",
+              "2021-07-20    3567.320\n",
+              "2021-07-19    3532.580\n",
+              "2021-07-16    3633.310\n",
+              "2021-07-15    3694.200\n",
+              "Name: open, dtype: float64"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 14
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 390
+        },
+        "id": "UPQsWq4-5894",
+        "outputId": "509b0154-bac9-4058-8b50-97466bf604ec"
+      },
+      "source": [
+        "df[['open','close']]"
+      ],
+      "execution_count": 16,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>open</th>\n",
+              "      <th>close</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2021-07-28</th>\n",
+              "      <td>3633.780</td>\n",
+              "      <td>3630.32</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-27</th>\n",
+              "      <td>3698.500</td>\n",
+              "      <td>3626.39</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-26</th>\n",
+              "      <td>3673.170</td>\n",
+              "      <td>3699.82</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-23</th>\n",
+              "      <td>3640.000</td>\n",
+              "      <td>3656.64</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-22</th>\n",
+              "      <td>3587.230</td>\n",
+              "      <td>3638.03</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-21</th>\n",
+              "      <td>3576.375</td>\n",
+              "      <td>3585.20</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-20</th>\n",
+              "      <td>3567.320</td>\n",
+              "      <td>3573.19</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-19</th>\n",
+              "      <td>3532.580</td>\n",
+              "      <td>3549.59</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-16</th>\n",
+              "      <td>3633.310</td>\n",
+              "      <td>3573.63</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-15</th>\n",
+              "      <td>3694.200</td>\n",
+              "      <td>3631.20</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "                open    close\n",
+              "Date                         \n",
+              "2021-07-28  3633.780  3630.32\n",
+              "2021-07-27  3698.500  3626.39\n",
+              "2021-07-26  3673.170  3699.82\n",
+              "2021-07-23  3640.000  3656.64\n",
+              "2021-07-22  3587.230  3638.03\n",
+              "2021-07-21  3576.375  3585.20\n",
+              "2021-07-20  3567.320  3573.19\n",
+              "2021-07-19  3532.580  3549.59\n",
+              "2021-07-16  3633.310  3573.63\n",
+              "2021-07-15  3694.200  3631.20"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 16
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 390
+        },
+        "id": "mME6UlUw6AQw",
+        "outputId": "b801b62c-aac0-4813-a9ba-3a2808800ba2"
+      },
+      "source": [
+        "df.iloc[:,[0,3]]"
+      ],
+      "execution_count": 18,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>open</th>\n",
+              "      <th>close</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2021-07-28</th>\n",
+              "      <td>3633.780</td>\n",
+              "      <td>3630.32</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-27</th>\n",
+              "      <td>3698.500</td>\n",
+              "      <td>3626.39</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-26</th>\n",
+              "      <td>3673.170</td>\n",
+              "      <td>3699.82</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-23</th>\n",
+              "      <td>3640.000</td>\n",
+              "      <td>3656.64</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-22</th>\n",
+              "      <td>3587.230</td>\n",
+              "      <td>3638.03</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-21</th>\n",
+              "      <td>3576.375</td>\n",
+              "      <td>3585.20</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-20</th>\n",
+              "      <td>3567.320</td>\n",
+              "      <td>3573.19</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-19</th>\n",
+              "      <td>3532.580</td>\n",
+              "      <td>3549.59</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-16</th>\n",
+              "      <td>3633.310</td>\n",
+              "      <td>3573.63</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-15</th>\n",
+              "      <td>3694.200</td>\n",
+              "      <td>3631.20</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "                open    close\n",
+              "Date                         \n",
+              "2021-07-28  3633.780  3630.32\n",
+              "2021-07-27  3698.500  3626.39\n",
+              "2021-07-26  3673.170  3699.82\n",
+              "2021-07-23  3640.000  3656.64\n",
+              "2021-07-22  3587.230  3638.03\n",
+              "2021-07-21  3576.375  3585.20\n",
+              "2021-07-20  3567.320  3573.19\n",
+              "2021-07-19  3532.580  3549.59\n",
+              "2021-07-16  3633.310  3573.63\n",
+              "2021-07-15  3694.200  3631.20"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 18
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 390
+        },
+        "id": "ZamUax2X6Sk_",
+        "outputId": "52adc16d-2afe-4230-98c6-2bc0e89100d1"
+      },
+      "source": [
+        "df.iloc[:,3:5]"
+      ],
+      "execution_count": 20,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>close</th>\n",
+              "      <th>volume</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2021-07-28</th>\n",
+              "      <td>3630.32</td>\n",
+              "      <td>2999378</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-27</th>\n",
+              "      <td>3626.39</td>\n",
+              "      <td>4131890</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-26</th>\n",
+              "      <td>3699.82</td>\n",
+              "      <td>2900068</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-23</th>\n",
+              "      <td>3656.64</td>\n",
+              "      <td>2436292</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-22</th>\n",
+              "      <td>3638.03</td>\n",
+              "      <td>3265352</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-21</th>\n",
+              "      <td>3585.20</td>\n",
+              "      <td>2318989</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-20</th>\n",
+              "      <td>3573.19</td>\n",
+              "      <td>3255680</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-19</th>\n",
+              "      <td>3549.59</td>\n",
+              "      <td>3784595</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-16</th>\n",
+              "      <td>3573.63</td>\n",
+              "      <td>4043706</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-15</th>\n",
+              "      <td>3631.20</td>\n",
+              "      <td>3185292</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "              close   volume\n",
+              "Date                        \n",
+              "2021-07-28  3630.32  2999378\n",
+              "2021-07-27  3626.39  4131890\n",
+              "2021-07-26  3699.82  2900068\n",
+              "2021-07-23  3656.64  2436292\n",
+              "2021-07-22  3638.03  3265352\n",
+              "2021-07-21  3585.20  2318989\n",
+              "2021-07-20  3573.19  3255680\n",
+              "2021-07-19  3549.59  3784595\n",
+              "2021-07-16  3573.63  4043706\n",
+              "2021-07-15  3631.20  3185292"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 20
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "VUrZAp5-6gEH",
+        "outputId": "a02ecf0a-1f92-4589-eabe-bc216cbcd146"
+      },
+      "source": [
+        "df.iloc[:,-1]"
+      ],
+      "execution_count": 21,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "Date\n",
+              "2021-07-28    2999378\n",
+              "2021-07-27    4131890\n",
+              "2021-07-26    2900068\n",
+              "2021-07-23    2436292\n",
+              "2021-07-22    3265352\n",
+              "2021-07-21    2318989\n",
+              "2021-07-20    3255680\n",
+              "2021-07-19    3784595\n",
+              "2021-07-16    4043706\n",
+              "2021-07-15    3185292\n",
+              "Name: volume, dtype: int64"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 21
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 390
+        },
+        "id": "plyTUmdZ6p2Y",
+        "outputId": "48554611-23f0-4de5-a47f-c87cb32ea707"
+      },
+      "source": [
+        "df.iloc[:,[-1]]"
+      ],
+      "execution_count": 22,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>volume</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2021-07-28</th>\n",
+              "      <td>2999378</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-27</th>\n",
+              "      <td>4131890</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-26</th>\n",
+              "      <td>2900068</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-23</th>\n",
+              "      <td>2436292</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-22</th>\n",
+              "      <td>3265352</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-21</th>\n",
+              "      <td>2318989</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-20</th>\n",
+              "      <td>3255680</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-19</th>\n",
+              "      <td>3784595</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-16</th>\n",
+              "      <td>4043706</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-15</th>\n",
+              "      <td>3185292</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "             volume\n",
+              "Date               \n",
+              "2021-07-28  2999378\n",
+              "2021-07-27  4131890\n",
+              "2021-07-26  2900068\n",
+              "2021-07-23  2436292\n",
+              "2021-07-22  3265352\n",
+              "2021-07-21  2318989\n",
+              "2021-07-20  3255680\n",
+              "2021-07-19  3784595\n",
+              "2021-07-16  4043706\n",
+              "2021-07-15  3185292"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 22
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 111
+        },
+        "id": "mUbC5QQI6w5Q",
+        "outputId": "556a06d4-cd77-4f65-9e59-5310bfd65d40"
+      },
+      "source": [
+        "df.loc['2021-07-28' ]"
+      ],
+      "execution_count": 26,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>open</th>\n",
+              "      <th>high</th>\n",
+              "      <th>low</th>\n",
+              "      <th>close</th>\n",
+              "      <th>volume</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2021-07-28</th>\n",
+              "      <td>3633.78</td>\n",
+              "      <td>3658.4204</td>\n",
+              "      <td>3601.0</td>\n",
+              "      <td>3630.32</td>\n",
+              "      <td>2999378</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "               open       high     low    close   volume\n",
+              "Date                                                    \n",
+              "2021-07-28  3633.78  3658.4204  3601.0  3630.32  2999378"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 26
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 282
+        },
+        "id": "4N1wTwq9_kV4",
+        "outputId": "a8353f29-9a87-4f0a-bebd-d167a7aed888"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": 28,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "AttributeError",
+          "evalue": "ignored",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mAttributeError\u001b[0m                            Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-28-e39bd8fa9754>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m()\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mpd\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msort\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdf\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;32m/usr/local/lib/python3.7/dist-packages/pandas/__init__.py\u001b[0m in \u001b[0;36m__getattr__\u001b[0;34m(name)\u001b[0m\n\u001b[1;32m    256\u001b[0m             \u001b[0;32mreturn\u001b[0m \u001b[0m_SparseArray\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    257\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 258\u001b[0;31m         \u001b[0;32mraise\u001b[0m \u001b[0mAttributeError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34mf\"module 'pandas' has no attribute '{name}'\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    259\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    260\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mAttributeError\u001b[0m: module 'pandas' has no attribute 'sort'"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "E9aipBgk_ozF"
+      },
+      "source": [
+        "df = fetch_financial_data('UBER')"
+      ],
+      "execution_count": 31,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "9Hy4hv-GAPMh",
+        "outputId": "02feac71-c4aa-480f-f732-72e9ff9c9765"
+      },
+      "source": [
+        "df.info()"
+      ],
+      "execution_count": 32,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "<class 'pandas.core.frame.DataFrame'>\n",
+            "DatetimeIndex: 559 entries, 2021-07-28 to 2019-05-10\n",
+            "Data columns (total 5 columns):\n",
+            " #   Column  Non-Null Count  Dtype  \n",
+            "---  ------  --------------  -----  \n",
+            " 0   Open    559 non-null    float64\n",
+            " 1   High    559 non-null    float64\n",
+            " 2   Low     559 non-null    float64\n",
+            " 3   Close   559 non-null    float64\n",
+            " 4   Volume  559 non-null    int64  \n",
+            "dtypes: float64(4), int64(1)\n",
+            "memory usage: 26.2 KB\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 297
+        },
+        "id": "0wTvG52oAQdZ",
+        "outputId": "520e75cf-b6d4-4a0e-93b5-3e7c97adaf24"
+      },
+      "source": [
+        "df.describe()"
+      ],
+      "execution_count": 33,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Open</th>\n",
+              "      <th>High</th>\n",
+              "      <th>Low</th>\n",
+              "      <th>Close</th>\n",
+              "      <th>Volume</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>count</th>\n",
+              "      <td>559.000000</td>\n",
+              "      <td>559.000000</td>\n",
+              "      <td>559.000000</td>\n",
+              "      <td>559.000000</td>\n",
+              "      <td>5.590000e+02</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>mean</th>\n",
+              "      <td>40.085239</td>\n",
+              "      <td>40.859820</td>\n",
+              "      <td>39.184214</td>\n",
+              "      <td>40.034741</td>\n",
+              "      <td>2.321957e+07</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>std</th>\n",
+              "      <td>10.156025</td>\n",
+              "      <td>10.240562</td>\n",
+              "      <td>9.999771</td>\n",
+              "      <td>10.093542</td>\n",
+              "      <td>1.734092e+07</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>min</th>\n",
+              "      <td>15.960000</td>\n",
+              "      <td>17.800000</td>\n",
+              "      <td>13.710000</td>\n",
+              "      <td>14.820000</td>\n",
+              "      <td>3.380003e+06</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>25%</th>\n",
+              "      <td>31.990000</td>\n",
+              "      <td>32.778100</td>\n",
+              "      <td>31.150000</td>\n",
+              "      <td>32.115000</td>\n",
+              "      <td>1.323827e+07</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>50%</th>\n",
+              "      <td>36.980000</td>\n",
+              "      <td>37.560000</td>\n",
+              "      <td>36.175000</td>\n",
+              "      <td>36.980000</td>\n",
+              "      <td>1.895976e+07</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>75%</th>\n",
+              "      <td>49.320000</td>\n",
+              "      <td>50.022500</td>\n",
+              "      <td>48.517500</td>\n",
+              "      <td>49.190000</td>\n",
+              "      <td>2.824360e+07</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>max</th>\n",
+              "      <td>63.250000</td>\n",
+              "      <td>64.050000</td>\n",
+              "      <td>60.800000</td>\n",
+              "      <td>63.180000</td>\n",
+              "      <td>1.863225e+08</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "             Open        High         Low       Close        Volume\n",
+              "count  559.000000  559.000000  559.000000  559.000000  5.590000e+02\n",
+              "mean    40.085239   40.859820   39.184214   40.034741  2.321957e+07\n",
+              "std     10.156025   10.240562    9.999771   10.093542  1.734092e+07\n",
+              "min     15.960000   17.800000   13.710000   14.820000  3.380003e+06\n",
+              "25%     31.990000   32.778100   31.150000   32.115000  1.323827e+07\n",
+              "50%     36.980000   37.560000   36.175000   36.980000  1.895976e+07\n",
+              "75%     49.320000   50.022500   48.517500   49.190000  2.824360e+07\n",
+              "max     63.250000   64.050000   60.800000   63.180000  1.863225e+08"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 33
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 235
+        },
+        "id": "hwShk3VzAgdR",
+        "outputId": "83b06318-815b-4c0a-a8fa-37396f044f74"
+      },
+      "source": [
+        "df['Average']=(df.Open + df.Close)/2\n",
+        "df.head(\n",
+        "  \n",
+        ")"
+      ],
+      "execution_count": 34,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Open</th>\n",
+              "      <th>High</th>\n",
+              "      <th>Low</th>\n",
+              "      <th>Close</th>\n",
+              "      <th>Volume</th>\n",
+              "      <th>Average</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2021-07-28</th>\n",
+              "      <td>45.88</td>\n",
+              "      <td>46.9632</td>\n",
+              "      <td>45.810</td>\n",
+              "      <td>46.14</td>\n",
+              "      <td>19510262</td>\n",
+              "      <td>46.010</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-27</th>\n",
+              "      <td>46.54</td>\n",
+              "      <td>46.6599</td>\n",
+              "      <td>44.765</td>\n",
+              "      <td>45.82</td>\n",
+              "      <td>16874229</td>\n",
+              "      <td>46.180</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-26</th>\n",
+              "      <td>47.04</td>\n",
+              "      <td>47.6000</td>\n",
+              "      <td>46.370</td>\n",
+              "      <td>46.81</td>\n",
+              "      <td>12497997</td>\n",
+              "      <td>46.925</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-23</th>\n",
+              "      <td>47.61</td>\n",
+              "      <td>47.6900</td>\n",
+              "      <td>46.780</td>\n",
+              "      <td>47.46</td>\n",
+              "      <td>9540666</td>\n",
+              "      <td>47.535</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-22</th>\n",
+              "      <td>47.70</td>\n",
+              "      <td>48.1700</td>\n",
+              "      <td>47.240</td>\n",
+              "      <td>47.57</td>\n",
+              "      <td>11560839</td>\n",
+              "      <td>47.635</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "             Open     High     Low  Close    Volume  Average\n",
+              "Date                                                        \n",
+              "2021-07-28  45.88  46.9632  45.810  46.14  19510262   46.010\n",
+              "2021-07-27  46.54  46.6599  44.765  45.82  16874229   46.180\n",
+              "2021-07-26  47.04  47.6000  46.370  46.81  12497997   46.925\n",
+              "2021-07-23  47.61  47.6900  46.780  47.46   9540666   47.535\n",
+              "2021-07-22  47.70  48.1700  47.240  47.57  11560839   47.635"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 34
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "VI-11FviA36B"
+      },
+      "source": [
+        "df = df.sort_index()"
+      ],
+      "execution_count": 37,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 450
+        },
+        "id": "R5cfYM1SBA5h",
+        "outputId": "786d0552-3656-403c-8d7e-d75d71b1cfb3"
+      },
+      "source": [
+        "df[['Close']].shift(1)"
+      ],
+      "execution_count": 39,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Close</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2019-05-10</th>\n",
+              "      <td>NaN</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-13</th>\n",
+              "      <td>41.57</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-14</th>\n",
+              "      <td>37.10</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-15</th>\n",
+              "      <td>39.96</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-16</th>\n",
+              "      <td>41.29</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>...</th>\n",
+              "      <td>...</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-22</th>\n",
+              "      <td>47.52</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-23</th>\n",
+              "      <td>47.57</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-26</th>\n",
+              "      <td>47.46</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-27</th>\n",
+              "      <td>46.81</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-07-28</th>\n",
+              "      <td>45.82</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "<p>559 rows × 1 columns</p>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "            Close\n",
+              "Date             \n",
+              "2019-05-10    NaN\n",
+              "2019-05-13  41.57\n",
+              "2019-05-14  37.10\n",
+              "2019-05-15  39.96\n",
+              "2019-05-16  41.29\n",
+              "...           ...\n",
+              "2021-07-22  47.52\n",
+              "2021-07-23  47.57\n",
+              "2021-07-26  47.46\n",
+              "2021-07-27  46.81\n",
+              "2021-07-28  45.82\n",
+              "\n",
+              "[559 rows x 1 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 39
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 235
+        },
+        "id": "8C8eRsgsBb64",
+        "outputId": "ac81d231-b916-46ba-e288-bcbd43a9a728"
+      },
+      "source": [
+        "df['Close_shift']=df.Close.shift(1)\n",
+        "df.head()"
+      ],
+      "execution_count": 40,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Open</th>\n",
+              "      <th>High</th>\n",
+              "      <th>Low</th>\n",
+              "      <th>Close</th>\n",
+              "      <th>Volume</th>\n",
+              "      <th>Average</th>\n",
+              "      <th>Close_shift</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2019-05-10</th>\n",
+              "      <td>42.00</td>\n",
+              "      <td>45.00</td>\n",
+              "      <td>41.06</td>\n",
+              "      <td>41.57</td>\n",
+              "      <td>186322536</td>\n",
+              "      <td>41.785</td>\n",
+              "      <td>NaN</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-13</th>\n",
+              "      <td>38.79</td>\n",
+              "      <td>39.24</td>\n",
+              "      <td>36.08</td>\n",
+              "      <td>37.10</td>\n",
+              "      <td>79442420</td>\n",
+              "      <td>37.945</td>\n",
+              "      <td>41.57</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-14</th>\n",
+              "      <td>38.31</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>36.85</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>46661147</td>\n",
+              "      <td>39.135</td>\n",
+              "      <td>37.10</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-15</th>\n",
+              "      <td>39.37</td>\n",
+              "      <td>41.88</td>\n",
+              "      <td>38.95</td>\n",
+              "      <td>41.29</td>\n",
+              "      <td>36086065</td>\n",
+              "      <td>40.330</td>\n",
+              "      <td>39.96</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-16</th>\n",
+              "      <td>41.48</td>\n",
+              "      <td>44.06</td>\n",
+              "      <td>41.25</td>\n",
+              "      <td>43.00</td>\n",
+              "      <td>38115524</td>\n",
+              "      <td>42.240</td>\n",
+              "      <td>41.29</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "             Open   High    Low  Close     Volume  Average  Close_shift\n",
+              "Date                                                                   \n",
+              "2019-05-10  42.00  45.00  41.06  41.57  186322536   41.785          NaN\n",
+              "2019-05-13  38.79  39.24  36.08  37.10   79442420   37.945        41.57\n",
+              "2019-05-14  38.31  39.96  36.85  39.96   46661147   39.135        37.10\n",
+              "2019-05-15  39.37  41.88  38.95  41.29   36086065   40.330        39.96\n",
+              "2019-05-16  41.48  44.06  41.25  43.00   38115524   42.240        41.29"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 40
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "SyNRx8ayB56h"
+      },
+      "source": [
+        "df['Daily_Change'] = df.Close/df.Close_shift - 1"
+      ],
+      "execution_count": 51,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 235
+        },
+        "id": "Zf42InntCEsB",
+        "outputId": "40c7a9bc-3a9f-4fb3-91b1-add854774bb3"
+      },
+      "source": [
+        "df.head()"
+      ],
+      "execution_count": 52,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Open</th>\n",
+              "      <th>High</th>\n",
+              "      <th>Low</th>\n",
+              "      <th>Close</th>\n",
+              "      <th>Volume</th>\n",
+              "      <th>Average</th>\n",
+              "      <th>Close_shift</th>\n",
+              "      <th>Daily Change</th>\n",
+              "      <th>Daily_Change</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2019-05-10</th>\n",
+              "      <td>42.00</td>\n",
+              "      <td>45.00</td>\n",
+              "      <td>41.06</td>\n",
+              "      <td>41.57</td>\n",
+              "      <td>186322536</td>\n",
+              "      <td>41.785</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>NaN</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-13</th>\n",
+              "      <td>38.79</td>\n",
+              "      <td>39.24</td>\n",
+              "      <td>36.08</td>\n",
+              "      <td>37.10</td>\n",
+              "      <td>79442420</td>\n",
+              "      <td>37.945</td>\n",
+              "      <td>41.57</td>\n",
+              "      <td>-0.107529</td>\n",
+              "      <td>-0.107529</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-14</th>\n",
+              "      <td>38.31</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>36.85</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>46661147</td>\n",
+              "      <td>39.135</td>\n",
+              "      <td>37.10</td>\n",
+              "      <td>0.077089</td>\n",
+              "      <td>0.077089</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-15</th>\n",
+              "      <td>39.37</td>\n",
+              "      <td>41.88</td>\n",
+              "      <td>38.95</td>\n",
+              "      <td>41.29</td>\n",
+              "      <td>36086065</td>\n",
+              "      <td>40.330</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>0.033283</td>\n",
+              "      <td>0.033283</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-16</th>\n",
+              "      <td>41.48</td>\n",
+              "      <td>44.06</td>\n",
+              "      <td>41.25</td>\n",
+              "      <td>43.00</td>\n",
+              "      <td>38115524</td>\n",
+              "      <td>42.240</td>\n",
+              "      <td>41.29</td>\n",
+              "      <td>0.041414</td>\n",
+              "      <td>0.041414</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "             Open   High    Low  ...  Close_shift  Daily Change  Daily_Change\n",
+              "Date                             ...                                         \n",
+              "2019-05-10  42.00  45.00  41.06  ...          NaN           NaN           NaN\n",
+              "2019-05-13  38.79  39.24  36.08  ...        41.57     -0.107529     -0.107529\n",
+              "2019-05-14  38.31  39.96  36.85  ...        37.10      0.077089      0.077089\n",
+              "2019-05-15  39.37  41.88  38.95  ...        39.96      0.033283      0.033283\n",
+              "2019-05-16  41.48  44.06  41.25  ...        41.29      0.041414      0.041414\n",
+              "\n",
+              "[5 rows x 9 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 52
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 235
+        },
+        "id": "RIC5IWUYCRh7",
+        "outputId": "ba86c6fb-2072-4cb1-dc7b-7a1c000da832"
+      },
+      "source": [
+        "del df['Daily Change']\n",
+        "df.head()"
+      ],
+      "execution_count": 53,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Open</th>\n",
+              "      <th>High</th>\n",
+              "      <th>Low</th>\n",
+              "      <th>Close</th>\n",
+              "      <th>Volume</th>\n",
+              "      <th>Average</th>\n",
+              "      <th>Close_shift</th>\n",
+              "      <th>Daily_Change</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2019-05-10</th>\n",
+              "      <td>42.00</td>\n",
+              "      <td>45.00</td>\n",
+              "      <td>41.06</td>\n",
+              "      <td>41.57</td>\n",
+              "      <td>186322536</td>\n",
+              "      <td>41.785</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>NaN</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-13</th>\n",
+              "      <td>38.79</td>\n",
+              "      <td>39.24</td>\n",
+              "      <td>36.08</td>\n",
+              "      <td>37.10</td>\n",
+              "      <td>79442420</td>\n",
+              "      <td>37.945</td>\n",
+              "      <td>41.57</td>\n",
+              "      <td>-0.107529</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-14</th>\n",
+              "      <td>38.31</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>36.85</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>46661147</td>\n",
+              "      <td>39.135</td>\n",
+              "      <td>37.10</td>\n",
+              "      <td>0.077089</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-15</th>\n",
+              "      <td>39.37</td>\n",
+              "      <td>41.88</td>\n",
+              "      <td>38.95</td>\n",
+              "      <td>41.29</td>\n",
+              "      <td>36086065</td>\n",
+              "      <td>40.330</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>0.033283</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-16</th>\n",
+              "      <td>41.48</td>\n",
+              "      <td>44.06</td>\n",
+              "      <td>41.25</td>\n",
+              "      <td>43.00</td>\n",
+              "      <td>38115524</td>\n",
+              "      <td>42.240</td>\n",
+              "      <td>41.29</td>\n",
+              "      <td>0.041414</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "             Open   High    Low  ...  Average  Close_shift  Daily_Change\n",
+              "Date                             ...                                    \n",
+              "2019-05-10  42.00  45.00  41.06  ...   41.785          NaN           NaN\n",
+              "2019-05-13  38.79  39.24  36.08  ...   37.945        41.57     -0.107529\n",
+              "2019-05-14  38.31  39.96  36.85  ...   39.135        37.10      0.077089\n",
+              "2019-05-15  39.37  41.88  38.95  ...   40.330        39.96      0.033283\n",
+              "2019-05-16  41.48  44.06  41.25  ...   42.240        41.29      0.041414\n",
+              "\n",
+              "[5 rows x 8 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 53
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "zXmHecX-DFbp",
+        "outputId": "dd4f07e5-1c80-4e9f-c61e-7c9c60f99b14"
+      },
+      "source": [
+        "df.Daily_Change.max()"
+      ],
+      "execution_count": 55,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "0.3825910931174088"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 55
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 286
+        },
+        "id": "TdvBuCNuDQ8J",
+        "outputId": "d3c150fc-b919-4145-99be-c1e999823676"
+      },
+      "source": [
+        "df.Daily_Change.hist(bins=100)"
+      ],
+      "execution_count": 58,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "<matplotlib.axes._subplots.AxesSubplot at 0x7f490a73c510>"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 58
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "image/png": "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e3u7Pv3pT0u6cgafDJz2MhpE0stbb72lVatWadu2bUkXhMN5TfLy8nTrrbfqD3/4Q1L146SXkydP6v3339cDDzwgSerq6pIxRt3d3Vq7du2gY1uzFFNWVqZf//rXkqQjR47o73//u4qLi6847tSpU1q2bJm++tWv6p577ol3mY447SUZOb3iZ1lZmXbu3KlgMKiOjg7t27dPpaWliSh5UDZdvdRpL2+//ba+853vaMuWLUn5nQpO+2htbQ393NHRoYMHD+rmm2+Oa63hOOklLy9PBw8eVGNjoxobG/W1r31NX/nKV4YMdUn27Io5c+aMeeihh8zcuXPNHXfcYV5//fXQY88//7z55S9/aYwx5plnnjG33nqrWbBgQei/3/72t4kqe0BOezl//rwpLi42RUVF5pZbbjHFxcVmy5YtiSo75N///re5++67zR133GHuvvtu09raaowxZvny5ebtt982xlyovbq62pSUlJiSkhKzY8eORJY8KCe9HDp0yBQXF5vPfOYzZubMmaa4uNjs378/kWUPyEkvCxcuNEVFRZd8Pt59991Eln0FJ32sW7fO3HnnnWbBggWmoqLCbN++PZElD8pJLxfbsmWLo10xXN0RACxjzVIMAOACgh0ALEOwA4BlCHYAsAzBDgCWIdgBwDIEOwBYhmAHAMv8H7DuKrsVJVZGAAAAAElFTkSuQmCC\n",
+            "text/plain": [
+              "<Figure size 432x288 with 1 Axes>"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "4RlQaQDzDtkp"
+      },
+      "source": [
+        "import seaborn as sns\n",
+        "sns.set()\n"
+      ],
+      "execution_count": 57,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 302
+        },
+        "id": "77F_Sp4uDzEJ",
+        "outputId": "b162f6f4-4ef5-4acf-9cf1-d96074e06e40"
+      },
+      "source": [
+        "df.Close.plot()"
+      ],
+      "execution_count": 59,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "<matplotlib.axes._subplots.AxesSubplot at 0x7f48fb73e8d0>"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 59
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "image/png": "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\n",
+            "text/plain": [
+              "<Figure size 432x288 with 1 Axes>"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Xi3aCLTHD6pB"
+      },
+      "source": [
+        "df_positive =df[df.Daily_Change > 0]"
+      ],
+      "execution_count": 64,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "80HRhn83EfJJ",
+        "outputId": "f46ce84d-fe79-4c6b-9eb7-cdbe8d1aa17f"
+      },
+      "source": [
+        "df_positive.Daily_Change.mean()"
+      ],
+      "execution_count": 65,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "0.026842600742750234"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 65
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "uDV33kzJE_LR"
+      },
+      "source": [
+        "df_negative=df[df.Daily_Change < 0]"
+      ],
+      "execution_count": 66,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 235
+        },
+        "id": "wWDfivPLFHaB",
+        "outputId": "c4a87686-fb29-4486-ea0f-f2c5e19646bd"
+      },
+      "source": [
+        "df[df.Close == df.High]"
+      ],
+      "execution_count": 67,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Open</th>\n",
+              "      <th>High</th>\n",
+              "      <th>Low</th>\n",
+              "      <th>Close</th>\n",
+              "      <th>Volume</th>\n",
+              "      <th>Average</th>\n",
+              "      <th>Close_shift</th>\n",
+              "      <th>Daily_Change</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2019-05-14</th>\n",
+              "      <td>38.31</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>36.85</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>46661147</td>\n",
+              "      <td>39.135</td>\n",
+              "      <td>37.10</td>\n",
+              "      <td>0.077089</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-24</th>\n",
+              "      <td>41.28</td>\n",
+              "      <td>41.51</td>\n",
+              "      <td>40.50</td>\n",
+              "      <td>41.51</td>\n",
+              "      <td>8786751</td>\n",
+              "      <td>41.395</td>\n",
+              "      <td>40.47</td>\n",
+              "      <td>0.025698</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2020-08-25</th>\n",
+              "      <td>31.04</td>\n",
+              "      <td>31.19</td>\n",
+              "      <td>30.60</td>\n",
+              "      <td>31.19</td>\n",
+              "      <td>10056762</td>\n",
+              "      <td>31.115</td>\n",
+              "      <td>31.04</td>\n",
+              "      <td>0.004832</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2020-12-04</th>\n",
+              "      <td>52.71</td>\n",
+              "      <td>54.86</td>\n",
+              "      <td>52.71</td>\n",
+              "      <td>54.86</td>\n",
+              "      <td>22207887</td>\n",
+              "      <td>53.785</td>\n",
+              "      <td>52.52</td>\n",
+              "      <td>0.044554</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2021-02-04</th>\n",
+              "      <td>56.45</td>\n",
+              "      <td>57.85</td>\n",
+              "      <td>56.11</td>\n",
+              "      <td>57.85</td>\n",
+              "      <td>13847255</td>\n",
+              "      <td>57.150</td>\n",
+              "      <td>57.12</td>\n",
+              "      <td>0.012780</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "             Open   High    Low  ...  Average  Close_shift  Daily_Change\n",
+              "Date                             ...                                    \n",
+              "2019-05-14  38.31  39.96  36.85  ...   39.135        37.10      0.077089\n",
+              "2019-05-24  41.28  41.51  40.50  ...   41.395        40.47      0.025698\n",
+              "2020-08-25  31.04  31.19  30.60  ...   31.115        31.04      0.004832\n",
+              "2020-12-04  52.71  54.86  52.71  ...   53.785        52.52      0.044554\n",
+              "2021-02-04  56.45  57.85  56.11  ...   57.150        57.12      0.012780\n",
+              "\n",
+              "[5 rows x 8 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 67
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 204
+        },
+        "id": "40WJ3Rv_FWkx",
+        "outputId": "b089268f-6fd0-4368-ae86-52451fc870fa"
+      },
+      "source": [
+        "df[df.Close == df.Low]"
+      ],
+      "execution_count": 68,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Open</th>\n",
+              "      <th>High</th>\n",
+              "      <th>Low</th>\n",
+              "      <th>Close</th>\n",
+              "      <th>Volume</th>\n",
+              "      <th>Average</th>\n",
+              "      <th>Close_shift</th>\n",
+              "      <th>Daily_Change</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2019-08-12</th>\n",
+              "      <td>39.84</td>\n",
+              "      <td>39.95</td>\n",
+              "      <td>37.00</td>\n",
+              "      <td>37.00</td>\n",
+              "      <td>20632310</td>\n",
+              "      <td>38.420</td>\n",
+              "      <td>40.05</td>\n",
+              "      <td>-0.076155</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-12-09</th>\n",
+              "      <td>27.96</td>\n",
+              "      <td>28.36</td>\n",
+              "      <td>27.68</td>\n",
+              "      <td>27.68</td>\n",
+              "      <td>21098387</td>\n",
+              "      <td>27.820</td>\n",
+              "      <td>27.86</td>\n",
+              "      <td>-0.006461</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-12-27</th>\n",
+              "      <td>30.80</td>\n",
+              "      <td>31.06</td>\n",
+              "      <td>30.17</td>\n",
+              "      <td>30.17</td>\n",
+              "      <td>18465965</td>\n",
+              "      <td>30.485</td>\n",
+              "      <td>30.67</td>\n",
+              "      <td>-0.016303</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2020-12-31</th>\n",
+              "      <td>53.28</td>\n",
+              "      <td>53.28</td>\n",
+              "      <td>51.00</td>\n",
+              "      <td>51.00</td>\n",
+              "      <td>13282786</td>\n",
+              "      <td>52.140</td>\n",
+              "      <td>53.15</td>\n",
+              "      <td>-0.040452</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "             Open   High    Low  ...  Average  Close_shift  Daily_Change\n",
+              "Date                             ...                                    \n",
+              "2019-08-12  39.84  39.95  37.00  ...   38.420        40.05     -0.076155\n",
+              "2019-12-09  27.96  28.36  27.68  ...   27.820        27.86     -0.006461\n",
+              "2019-12-27  30.80  31.06  30.17  ...   30.485        30.67     -0.016303\n",
+              "2020-12-31  53.28  53.28  51.00  ...   52.140        53.15     -0.040452\n",
+              "\n",
+              "[4 rows x 8 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 68
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 390
+        },
+        "id": "9EFrSeEaFf7B",
+        "outputId": "cf369528-411f-4890-fed7-7b12830f3dc3"
+      },
+      "source": [
+        "df[(df.index >= '2019-11-01') & (df.index < '2019-11-15') ]"
+      ],
+      "execution_count": 70,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Open</th>\n",
+              "      <th>High</th>\n",
+              "      <th>Low</th>\n",
+              "      <th>Close</th>\n",
+              "      <th>Volume</th>\n",
+              "      <th>Average</th>\n",
+              "      <th>Close_shift</th>\n",
+              "      <th>Daily_Change</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2019-11-01</th>\n",
+              "      <td>31.45</td>\n",
+              "      <td>31.70</td>\n",
+              "      <td>30.7412</td>\n",
+              "      <td>31.37</td>\n",
+              "      <td>10460430</td>\n",
+              "      <td>31.410</td>\n",
+              "      <td>31.50</td>\n",
+              "      <td>-0.004127</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-11-04</th>\n",
+              "      <td>31.45</td>\n",
+              "      <td>31.75</td>\n",
+              "      <td>30.1200</td>\n",
+              "      <td>31.08</td>\n",
+              "      <td>32330121</td>\n",
+              "      <td>31.265</td>\n",
+              "      <td>31.37</td>\n",
+              "      <td>-0.009245</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-11-05</th>\n",
+              "      <td>29.13</td>\n",
+              "      <td>29.30</td>\n",
+              "      <td>27.9700</td>\n",
+              "      <td>28.02</td>\n",
+              "      <td>52180615</td>\n",
+              "      <td>28.575</td>\n",
+              "      <td>31.08</td>\n",
+              "      <td>-0.098456</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-11-06</th>\n",
+              "      <td>26.06</td>\n",
+              "      <td>27.55</td>\n",
+              "      <td>25.5800</td>\n",
+              "      <td>26.94</td>\n",
+              "      <td>133569790</td>\n",
+              "      <td>26.500</td>\n",
+              "      <td>28.02</td>\n",
+              "      <td>-0.038544</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-11-07</th>\n",
+              "      <td>26.80</td>\n",
+              "      <td>27.42</td>\n",
+              "      <td>26.4500</td>\n",
+              "      <td>27.38</td>\n",
+              "      <td>65949472</td>\n",
+              "      <td>27.090</td>\n",
+              "      <td>26.94</td>\n",
+              "      <td>0.016333</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-11-08</th>\n",
+              "      <td>27.48</td>\n",
+              "      <td>27.62</td>\n",
+              "      <td>26.9150</td>\n",
+              "      <td>27.01</td>\n",
+              "      <td>45263118</td>\n",
+              "      <td>27.245</td>\n",
+              "      <td>27.38</td>\n",
+              "      <td>-0.013514</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-11-11</th>\n",
+              "      <td>27.03</td>\n",
+              "      <td>27.21</td>\n",
+              "      <td>26.2300</td>\n",
+              "      <td>27.14</td>\n",
+              "      <td>41445732</td>\n",
+              "      <td>27.085</td>\n",
+              "      <td>27.01</td>\n",
+              "      <td>0.004813</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-11-12</th>\n",
+              "      <td>27.38</td>\n",
+              "      <td>27.66</td>\n",
+              "      <td>26.6600</td>\n",
+              "      <td>26.70</td>\n",
+              "      <td>37095389</td>\n",
+              "      <td>27.040</td>\n",
+              "      <td>27.14</td>\n",
+              "      <td>-0.016212</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-11-13</th>\n",
+              "      <td>26.47</td>\n",
+              "      <td>26.82</td>\n",
+              "      <td>26.1400</td>\n",
+              "      <td>26.71</td>\n",
+              "      <td>34512663</td>\n",
+              "      <td>26.590</td>\n",
+              "      <td>26.70</td>\n",
+              "      <td>0.000375</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-11-14</th>\n",
+              "      <td>26.80</td>\n",
+              "      <td>26.86</td>\n",
+              "      <td>25.6650</td>\n",
+              "      <td>25.99</td>\n",
+              "      <td>28027875</td>\n",
+              "      <td>26.395</td>\n",
+              "      <td>26.71</td>\n",
+              "      <td>-0.026956</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "             Open   High      Low  ...  Average  Close_shift  Daily_Change\n",
+              "Date                               ...                                    \n",
+              "2019-11-01  31.45  31.70  30.7412  ...   31.410        31.50     -0.004127\n",
+              "2019-11-04  31.45  31.75  30.1200  ...   31.265        31.37     -0.009245\n",
+              "2019-11-05  29.13  29.30  27.9700  ...   28.575        31.08     -0.098456\n",
+              "2019-11-06  26.06  27.55  25.5800  ...   26.500        28.02     -0.038544\n",
+              "2019-11-07  26.80  27.42  26.4500  ...   27.090        26.94      0.016333\n",
+              "2019-11-08  27.48  27.62  26.9150  ...   27.245        27.38     -0.013514\n",
+              "2019-11-11  27.03  27.21  26.2300  ...   27.085        27.01      0.004813\n",
+              "2019-11-12  27.38  27.66  26.6600  ...   27.040        27.14     -0.016212\n",
+              "2019-11-13  26.47  26.82  26.1400  ...   26.590        26.70      0.000375\n",
+              "2019-11-14  26.80  26.86  25.6650  ...   26.395        26.71     -0.026956\n",
+              "\n",
+              "[10 rows x 8 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 70
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 142
+        },
+        "id": "rjYzM-9tGDWR",
+        "outputId": "a603bc36-67e1-43a0-d1be-0d34615a6de2"
+      },
+      "source": [
+        "df[(df.index == '2019-11-01') | (df.index == '2019-11-07') ]"
+      ],
+      "execution_count": 71,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Open</th>\n",
+              "      <th>High</th>\n",
+              "      <th>Low</th>\n",
+              "      <th>Close</th>\n",
+              "      <th>Volume</th>\n",
+              "      <th>Average</th>\n",
+              "      <th>Close_shift</th>\n",
+              "      <th>Daily_Change</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2019-11-01</th>\n",
+              "      <td>31.45</td>\n",
+              "      <td>31.70</td>\n",
+              "      <td>30.7412</td>\n",
+              "      <td>31.37</td>\n",
+              "      <td>10460430</td>\n",
+              "      <td>31.41</td>\n",
+              "      <td>31.50</td>\n",
+              "      <td>-0.004127</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-11-07</th>\n",
+              "      <td>26.80</td>\n",
+              "      <td>27.42</td>\n",
+              "      <td>26.4500</td>\n",
+              "      <td>27.38</td>\n",
+              "      <td>65949472</td>\n",
+              "      <td>27.09</td>\n",
+              "      <td>26.94</td>\n",
+              "      <td>0.016333</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "             Open   High      Low  ...  Average  Close_shift  Daily_Change\n",
+              "Date                               ...                                    \n",
+              "2019-11-01  31.45  31.70  30.7412  ...    31.41        31.50     -0.004127\n",
+              "2019-11-07  26.80  27.42  26.4500  ...    27.09        26.94      0.016333\n",
+              "\n",
+              "[2 rows x 8 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 71
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 545
+        },
+        "id": "aUxsc6GYGTLx",
+        "outputId": "c79ccc51-668b-4e14-dce8-48bfda4ac431"
+      },
+      "source": [
+        "df[(df.index.month == 5) & (df.index.year == 2019)]"
+      ],
+      "execution_count": 73,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Open</th>\n",
+              "      <th>High</th>\n",
+              "      <th>Low</th>\n",
+              "      <th>Close</th>\n",
+              "      <th>Volume</th>\n",
+              "      <th>Average</th>\n",
+              "      <th>Close_shift</th>\n",
+              "      <th>Daily_Change</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Date</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2019-05-10</th>\n",
+              "      <td>42.00</td>\n",
+              "      <td>45.00</td>\n",
+              "      <td>41.0600</td>\n",
+              "      <td>41.57</td>\n",
+              "      <td>186322536</td>\n",
+              "      <td>41.785</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>NaN</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-13</th>\n",
+              "      <td>38.79</td>\n",
+              "      <td>39.24</td>\n",
+              "      <td>36.0800</td>\n",
+              "      <td>37.10</td>\n",
+              "      <td>79442420</td>\n",
+              "      <td>37.945</td>\n",
+              "      <td>41.57</td>\n",
+              "      <td>-0.107529</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-14</th>\n",
+              "      <td>38.31</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>36.8500</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>46661147</td>\n",
+              "      <td>39.135</td>\n",
+              "      <td>37.10</td>\n",
+              "      <td>0.077089</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-15</th>\n",
+              "      <td>39.37</td>\n",
+              "      <td>41.88</td>\n",
+              "      <td>38.9500</td>\n",
+              "      <td>41.29</td>\n",
+              "      <td>36086065</td>\n",
+              "      <td>40.330</td>\n",
+              "      <td>39.96</td>\n",
+              "      <td>0.033283</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-16</th>\n",
+              "      <td>41.48</td>\n",
+              "      <td>44.06</td>\n",
+              "      <td>41.2500</td>\n",
+              "      <td>43.00</td>\n",
+              "      <td>38115524</td>\n",
+              "      <td>42.240</td>\n",
+              "      <td>41.29</td>\n",
+              "      <td>0.041414</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-17</th>\n",
+              "      <td>41.98</td>\n",
+              "      <td>43.29</td>\n",
+              "      <td>41.2700</td>\n",
+              "      <td>41.91</td>\n",
+              "      <td>20225687</td>\n",
+              "      <td>41.945</td>\n",
+              "      <td>43.00</td>\n",
+              "      <td>-0.025349</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-20</th>\n",
+              "      <td>41.19</td>\n",
+              "      <td>41.68</td>\n",
+              "      <td>39.4600</td>\n",
+              "      <td>41.59</td>\n",
+              "      <td>29222330</td>\n",
+              "      <td>41.390</td>\n",
+              "      <td>41.91</td>\n",
+              "      <td>-0.007635</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-21</th>\n",
+              "      <td>42.00</td>\n",
+              "      <td>42.24</td>\n",
+              "      <td>41.2500</td>\n",
+              "      <td>41.50</td>\n",
+              "      <td>10802851</td>\n",
+              "      <td>41.750</td>\n",
+              "      <td>41.59</td>\n",
+              "      <td>-0.002164</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-22</th>\n",
+              "      <td>41.05</td>\n",
+              "      <td>41.28</td>\n",
+              "      <td>40.5000</td>\n",
+              "      <td>41.25</td>\n",
+              "      <td>9089469</td>\n",
+              "      <td>41.150</td>\n",
+              "      <td>41.50</td>\n",
+              "      <td>-0.006024</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-23</th>\n",
+              "      <td>40.80</td>\n",
+              "      <td>41.09</td>\n",
+              "      <td>40.0200</td>\n",
+              "      <td>40.47</td>\n",
+              "      <td>11119870</td>\n",
+              "      <td>40.635</td>\n",
+              "      <td>41.25</td>\n",
+              "      <td>-0.018909</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-24</th>\n",
+              "      <td>41.28</td>\n",
+              "      <td>41.51</td>\n",
+              "      <td>40.5000</td>\n",
+              "      <td>41.51</td>\n",
+              "      <td>8786751</td>\n",
+              "      <td>41.395</td>\n",
+              "      <td>40.47</td>\n",
+              "      <td>0.025698</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-28</th>\n",
+              "      <td>41.70</td>\n",
+              "      <td>41.80</td>\n",
+              "      <td>40.6000</td>\n",
+              "      <td>40.95</td>\n",
+              "      <td>13391605</td>\n",
+              "      <td>41.325</td>\n",
+              "      <td>41.51</td>\n",
+              "      <td>-0.013491</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-29</th>\n",
+              "      <td>40.52</td>\n",
+              "      <td>40.71</td>\n",
+              "      <td>39.1473</td>\n",
+              "      <td>39.94</td>\n",
+              "      <td>14060447</td>\n",
+              "      <td>40.230</td>\n",
+              "      <td>40.95</td>\n",
+              "      <td>-0.024664</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-30</th>\n",
+              "      <td>40.07</td>\n",
+              "      <td>40.38</td>\n",
+              "      <td>39.5000</td>\n",
+              "      <td>39.80</td>\n",
+              "      <td>26451864</td>\n",
+              "      <td>39.935</td>\n",
+              "      <td>39.94</td>\n",
+              "      <td>-0.003505</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2019-05-31</th>\n",
+              "      <td>41.15</td>\n",
+              "      <td>41.57</td>\n",
+              "      <td>39.4100</td>\n",
+              "      <td>40.41</td>\n",
+              "      <td>23209848</td>\n",
+              "      <td>40.780</td>\n",
+              "      <td>39.80</td>\n",
+              "      <td>0.015327</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "             Open   High      Low  ...  Average  Close_shift  Daily_Change\n",
+              "Date                               ...                                    \n",
+              "2019-05-10  42.00  45.00  41.0600  ...   41.785          NaN           NaN\n",
+              "2019-05-13  38.79  39.24  36.0800  ...   37.945        41.57     -0.107529\n",
+              "2019-05-14  38.31  39.96  36.8500  ...   39.135        37.10      0.077089\n",
+              "2019-05-15  39.37  41.88  38.9500  ...   40.330        39.96      0.033283\n",
+              "2019-05-16  41.48  44.06  41.2500  ...   42.240        41.29      0.041414\n",
+              "2019-05-17  41.98  43.29  41.2700  ...   41.945        43.00     -0.025349\n",
+              "2019-05-20  41.19  41.68  39.4600  ...   41.390        41.91     -0.007635\n",
+              "2019-05-21  42.00  42.24  41.2500  ...   41.750        41.59     -0.002164\n",
+              "2019-05-22  41.05  41.28  40.5000  ...   41.150        41.50     -0.006024\n",
+              "2019-05-23  40.80  41.09  40.0200  ...   40.635        41.25     -0.018909\n",
+              "2019-05-24  41.28  41.51  40.5000  ...   41.395        40.47      0.025698\n",
+              "2019-05-28  41.70  41.80  40.6000  ...   41.325        41.51     -0.013491\n",
+              "2019-05-29  40.52  40.71  39.1473  ...   40.230        40.95     -0.024664\n",
+              "2019-05-30  40.07  40.38  39.5000  ...   39.935        39.94     -0.003505\n",
+              "2019-05-31  41.15  41.57  39.4100  ...   40.780        39.80      0.015327\n",
+              "\n",
+              "[15 rows x 8 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 73
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "WHRVI9yNGlTi"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
